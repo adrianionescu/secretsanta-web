@@ -1,1 +1,0 @@
-* figure out dev containers and how to either connect to my local mongo or spin up a mongo container that saves on D:
