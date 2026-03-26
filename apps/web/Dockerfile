@@ -8,10 +8,9 @@ RUN corepack enable pnpm
 
 # Copy workspace config files
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-COPY tsconfig.base.json tsconfig.json nx.json buf.yaml buf.gen.yaml ./
+COPY tsconfig.base.json tsconfig.json nx.json ./
 
-# Copy source for proto, shared libs, and web app
-COPY proto/ proto/
+# Copy shared libs and web app
 COPY libs/ libs/
 COPY apps/web/ apps/web/
 

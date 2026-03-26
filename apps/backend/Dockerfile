@@ -6,21 +6,17 @@ RUN corepack enable pnpm
 
 # Copy workspace config files
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-COPY tsconfig.base.json tsconfig.json nx.json buf.yaml buf.gen.yaml ./
+COPY tsconfig.base.json tsconfig.json nx.json ./
 
-# Copy source for proto, shared libs, and API
-COPY proto/ proto/
+# Copy shared libs and backend app
 COPY libs/ libs/
-COPY apps/api/ apps/api/
+COPY apps/backend/ apps/backend/
 
-# Install all dependencies (includes @bufbuild/buf which provides the buf CLI)
+# Install all dependencies
 RUN pnpm install --frozen-lockfile
 
-# Generate proto types using the locally installed buf
-RUN mkdir -p libs/proto/src/gen && node_modules/.bin/buf generate
-
-# Build the API
-RUN pnpm nx build api --prod
+# Build the backend
+RUN pnpm nx build backend --prod
 
 # ---- Stage 2: Runtime ----
 FROM node:24-alpine AS runtime
@@ -29,7 +25,7 @@ WORKDIR /app
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 # Copy built output
-COPY --from=builder /app/dist/apps/api ./
+COPY --from=builder /app/dist/apps/backend ./
 
 # Install only production dependencies
 RUN npm install --omit=dev --ignore-scripts

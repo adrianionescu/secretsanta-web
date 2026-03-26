@@ -45,9 +45,6 @@ pnpm-debug.log*
 coverage/
 .nyc_output/
 
-# Generated proto code (regenerated from proto files at build time)
-libs/proto/src/gen/
-
 # Docker
 .dockerignore
 .devcontainer/docker-compose.override.yml
