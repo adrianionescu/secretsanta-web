@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SessionService, Pair } from '../../services/session.service';
 import { SessionModel } from '@secret-santa/shared';
@@ -15,10 +15,10 @@ export class SessionListComponent implements OnInit {
   loading = false;
   error = '';
 
-  constructor(private sessionService: SessionService) {}
+  constructor(private sessionService: SessionService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.load();
+    this.load(); 
   }
 
   load() {
@@ -27,10 +27,12 @@ export class SessionListComponent implements OnInit {
       next: (sessions) => {
         this.sessions = sessions;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.error = err.message || 'Failed to load sessions.';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
