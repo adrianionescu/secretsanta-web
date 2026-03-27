@@ -2,7 +2,7 @@
 FROM node:24-alpine AS builder
 WORKDIR /app
 
-ARG API_URL=http://localhost:3000
+ARG BACKEND_URL=http://localhost:3000
 
 RUN corepack enable pnpm
 
@@ -17,8 +17,8 @@ COPY apps/web/ apps/web/
 # Install all dependencies
 RUN pnpm install --frozen-lockfile
 
-# Replace the API URL placeholder in the production environment
-RUN sed -i "s|__API_URL__|${API_URL}|g" apps/web/src/environments/environment.prod.ts
+# Replace the BACKEND URL placeholder in the production environment
+RUN sed -i "s|__BACKEND_URL__|${BACKEND_URL}|g" apps/web/src/environments/environment.prod.ts
 
 # Build the Angular app in production mode
 RUN pnpm nx build web --prod

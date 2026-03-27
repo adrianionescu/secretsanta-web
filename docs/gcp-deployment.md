@@ -11,13 +11,13 @@ GitHub (main branch push)
         │
         ▼
 GitHub Actions (deploy.yml)
-  ├── Build API Docker image  ──► Artifact Registry
+  ├── Build Backend Docker image  ──► Artifact Registry
   │   └── Deploy to Cloud Run (secret-santa-backend)  ◄── Firestore
   │
   └── Build Web Docker image  ──► Artifact Registry
       └── Deploy to Cloud Run (secret-santa-web)
               │
-              └── (uses API_URL from API deploy output)
+              └── (uses BACKEND_URL from Backend deploy output)
 ```
 
 | Service | Cloud Run name | Port | DB |
@@ -146,8 +146,8 @@ Once the one-time setup is done, deployments are fully automated:
 
 1. **Push to `main`** triggers `.github/workflows/deploy.yml`
 2. The workflow authenticates to GCP using Workload Identity Federation (no stored keys)
-3. **API image** is built from `apps/backend/Dockerfile`, pushed to Artifact Registry, deployed to Cloud Run
-4. **Web image** is built from `apps/web/Dockerfile` with the API's Cloud Run URL injected as `API_URL`, then deployed to Cloud Run
+3. **Backend image** is built from `apps/backend/Dockerfile`, pushed to Artifact Registry, deployed to Cloud Run
+4. **Web image** is built from `apps/web/Dockerfile` with the Backend's Cloud Run URL injected as `BACKEND_URL`, then deployed to Cloud Run
 
 ### Manual deployment (optional)
 
@@ -161,26 +161,26 @@ gcloud config set project YOUR_PROJECT_ID
 # Configure Docker
 gcloud auth configure-docker us-central1-docker.pkg.dev
 
-# Build and push API
-API_IMAGE="us-central1-docker.pkg.dev/YOUR_PROJECT_ID/secret-santa/backend:manual"
-docker build -f apps/backend/Dockerfile -t $API_IMAGE .
-docker push $API_IMAGE
+# Build and push Backend
+BACKEND_IMAGE="us-central1-docker.pkg.dev/YOUR_PROJECT_ID/secret-santa/backend:manual"
+docker build -f apps/backend/Dockerfile -t $BACKEND_IMAGE .
+docker push $BACKEND_IMAGE
 
-# Deploy API
+# Deploy Backend
 gcloud run deploy secret-santa-backend \
-  --image=$API_IMAGE \
+  --image=$BACKEND_IMAGE \
   --region=us-central1 \
   --allow-unauthenticated \
   --port=3000 \
   --set-env-vars="DB_PROVIDER=firestore,GCP_PROJECT_ID=YOUR_PROJECT_ID"
 
-# Get the API URL
-API_URL=$(gcloud run services describe secret-santa-backend \
+# Get the Backend URL
+BACKEND_URL=$(gcloud run services describe secret-santa-backend \
   --region=us-central1 --format="value(status.url)")
 
 # Build and push Web
 WEB_IMAGE="us-central1-docker.pkg.dev/YOUR_PROJECT_ID/secret-santa/web:manual"
-docker build -f apps/web/Dockerfile --build-arg API_URL=$API_URL -t $WEB_IMAGE .
+docker build -f apps/web/Dockerfile --build-arg BACKEND_URL=$BACKEND_URL -t $WEB_IMAGE .
 docker push $WEB_IMAGE
 
 # Deploy Web
@@ -204,12 +204,12 @@ gcloud run services describe secret-santa-web --region=us-central1 --format="val
 
 Open the web URL in your browser to use the application.
 
-### Verify the API is healthy
+### Verify the Backend is healthy
 
 ```bash
-API_URL=$(gcloud run services describe secret-santa-backend \
+BACKEND_URL=$(gcloud run services describe secret-santa-backend \
   --region=us-central1 --format="value(status.url)")
-curl $API_URL/health
+curl $BACKEND_URL/health
 # → {"status":"ok"}
 ```
 
@@ -219,11 +219,11 @@ curl $API_URL/health
 
 | Variable | Service | Default | Description |
 |---|---|---|---|
-| `DB_PROVIDER` | API | `mongo` | `mongo` (local) or `firestore` (GCP) |
-| `MONGO_URI` | API | `mongodb://localhost:27017/secretsanta` | MongoDB connection string (local only) |
-| `GCP_PROJECT_ID` | API | — | GCP project ID (required when `DB_PROVIDER=firestore`) |
-| `PORT` | API | `3000` | HTTP port (Cloud Run sets this automatically) |
-| `FRONTEND_URL` | API | — | Frontend Cloud Run URL, added to CORS allowed origins |
+| `DB_PROVIDER` | Backend | `mongo` | `mongo` (local) or `firestore` (GCP) |
+| `MONGO_URI` | Backend | `mongodb://localhost:27017/secretsanta` | MongoDB connection string (local only) |
+| `GCP_PROJECT_ID` | Backend | — | GCP project ID (required when `DB_PROVIDER=firestore`) |
+| `PORT` | Backend | `3000` | HTTP port (Cloud Run sets this automatically) |
+| `FRONTEND_URL` | Backend | — | Frontend Cloud Run URL, added to CORS allowed origins |
 
 ---
 

@@ -1,4 +1,4 @@
-# ADR — Migrate API Communication from ConnectRPC to REST
+# ADR — Migrate Backend Communication from ConnectRPC to REST
 
 **Date:** 2026-03-26
 **Status:** Accepted

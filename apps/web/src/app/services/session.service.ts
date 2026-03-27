@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class SessionService {
-  private readonly base = `${environment.apiUrl}/sessions`;
+  private readonly base = `${environment.backendUrl}/sessions`;
   private readonly http = inject(HttpClient);
 
   generatePairs(participants: string[]): Observable<{ pairs: string; participants: string[] }> {

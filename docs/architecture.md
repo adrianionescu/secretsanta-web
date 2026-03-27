@@ -13,7 +13,7 @@ Secret Santa is a full-stack web application organized as a **monorepo** using [
                                    │ HTTP
                                    ▼
                     ┌──────────────────────────┐
-                    │   NestJS 11 (API)        │
+                    │   NestJS 11 (Backend)        │
                     │                          │
                     │  SessionController       │
                     │  └── SessionService      │
@@ -50,14 +50,14 @@ secret-santa-web/
 | Package manager | [pnpm](https://pnpm.io) | 10.32 | Workspace dependency management |
 | **Frontend** | [Angular](https://angular.dev) | 21 | SPA framework (standalone components) |
 | **Backend** | [NestJS](https://nestjs.com) | 11 | Node.js server framework |
-| **API protocol** | REST (HTTP/JSON) | — | Standard HTTP endpoints |
+| **Backend protocol** | REST (HTTP/JSON) | — | Standard HTTP endpoints |
 | DB (local) | [MongoDB](https://mongodb.com) + Mongoose | 9.x | Local development database |
 | DB (GCP) | [Cloud Firestore](https://cloud.google.com/firestore) | 8.x | Production database |
 | Language | TypeScript | 5.7 | Both frontend and backend |
 
 ---
 
-## API Design
+## Backend Design
 
 ### Endpoints: `SessionController` (`/sessions`)
 

@@ -83,17 +83,17 @@ The Secret Santa application was greenfield. A number of foundational decisions 
 
 ---
 
-### 6. API URL injected at Docker build time via `ARG` + `sed`
+### 6. Backend URL injected at Docker build time via `ARG` + `sed`
 
-**Decision:** The Angular production environment file (`environment.prod.ts`) contains the placeholder `__API_URL__`. The web Dockerfile accepts `API_URL` as a build argument and uses `sed` to replace the placeholder before running `nx build web`.
+**Decision:** The Angular production environment file (`environment.prod.ts`) contains the placeholder `__BACKEND_URL__`. The web Dockerfile accepts `BACKEND_URL` as a build argument and uses `sed` to replace the placeholder before running `nx build web`.
 
 **Alternatives considered:**
 - Serve a `config.json` at runtime and fetch it from the Angular app on startup.
 - Use Cloud Run environment variables and a startup script to patch `index.html`.
 
-**Rationale:** Angular compiles environment values into the bundle at build time. Runtime config injection requires either a server-side render step or a custom fetch-on-init pattern. The `sed` approach is minimal: no extra runtime logic, no config endpoint to maintain. The Cloud Run deploy step already has the API URL available as a shell variable, so passing it as a Docker build argument is straightforward.
+**Rationale:** Angular compiles environment values into the bundle at build time. Runtime config injection requires either a server-side render step or a custom fetch-on-init pattern. The `sed` approach is minimal: no extra runtime logic, no config endpoint to maintain. The Cloud Run deploy step already has the Backend URL available as a shell variable, so passing it as a Docker build argument is straightforward.
 
-**Consequences:** Each deployment produces a Docker image that is hard-coded to a specific API URL. If the API Cloud Run URL ever changes, the web image must be rebuilt. Images are not portable across environments without rebuilding.
+**Consequences:** Each deployment produces a Docker image that is hard-coded to a specific Backend URL. If the Backend Cloud Run URL ever changes, the web image must be rebuilt. Images are not portable across environments without rebuilding.
 
 ---
 

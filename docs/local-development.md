@@ -31,13 +31,13 @@ The dev container starts MongoDB automatically via Docker Compose. If you're run
 
 Open two terminals and run the backend and frontend in parallel.
 
-### Backend (API — port 3000)
+### Backend (Backend — port 3000)
 
 ```bash
 pnpm run dev:backend
 ```
 
-The API starts on `http://localhost:3000`. Test it is running:
+The Backend starts on `http://localhost:3000`. Test it is running:
 
 ```bash
 curl http://localhost:3000/health
@@ -50,13 +50,13 @@ curl http://localhost:3000/health
 pnpm run dev:web
 ```
 
-Open `http://localhost:4200` in your browser. The Angular dev server proxies nothing — it calls the API at `http://localhost:3000` directly.
+Open `http://localhost:4200` in your browser. The Angular dev server proxies nothing — it calls the Backend at `http://localhost:3000` directly.
 
 ---
 
 ## Environment Variables
 
-The API reads its configuration from a `.env.development` file at the workspace root. See README.md for details.
+The Backend reads its configuration from a `.env.development` file at the workspace root. See README.md for details.
 
 ---
 
@@ -112,11 +112,11 @@ A launch configuration is provided in `.vscode/launch.json`. In VS Code:
 
 1. Press `F5` or open the **Run and Debug** panel
 2. Select **"Debug backend with Nx"**
-3. The API starts with `--inspect`, and VS Code attaches automatically
+3. The Backend starts with `--inspect`, and VS Code attaches automatically
 
 You can set breakpoints in any file under `apps/backend/src/`.
 
-Alternatively, start the API in debug mode from the terminal:
+Alternatively, start the Backend in debug mode from the terminal:
 
 ```bash
 node --inspect -r ts-node/register -r tsconfig-paths/register apps/backend/src/main.ts
