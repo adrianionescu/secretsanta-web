@@ -19,9 +19,17 @@
         <button class="btn-delete" (click)="deleteSession(session.name)" title="Delete session">✕</button>
       </div>
       <div class="session-pairs">
-        @for (pair of parsePairs(session.pairs); track $index) {
+        @for (pair of parsePairsWithIds(session.name, session.pairs); track $index) {
           <div class="pair-item">
             <strong>{{ pair.giver }}</strong> → {{ pair.receiver }}
+            <span class="pair-message">{{ formatMessage(pair.giver, pair.giverId, pair.receiverId) }}</span>
+            <button
+              class="btn-copy"
+              [class.copied]="copiedKey === session.name + $index"
+              (click)="copyMessage(pair.giver, pair.giverId, pair.receiverId, session.name + $index)"
+              title="Copy message">
+              {{ copiedKey === session.name + $index ? 'Copied!' : 'Copy' }}
+            </button>
           </div>
         }
       </div>
