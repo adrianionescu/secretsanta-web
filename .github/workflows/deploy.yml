@@ -92,9 +92,16 @@ jobs:
           docker push $IMAGE
 
       - name: Deploy Web to Cloud Run
+        id: deploy-web
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: secret-santa-web
           region: ${{ env.GCP_REGION }}
           image: ${{ env.GAR_HOST }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.GAR_REPO }}/web:${{ github.sha }}
           flags: --allow-unauthenticated --port=8080 --memory=256Mi --cpu=1
+
+      - name: Set FRONTEND_URL on API
+        run: |
+          gcloud run services update secret-santa-backend \
+            --region=${{ env.GCP_REGION }} \
+            --update-env-vars="FRONTEND_URL=${{ steps.deploy-web.outputs.url }}"
