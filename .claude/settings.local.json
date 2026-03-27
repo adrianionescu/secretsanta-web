@@ -1,18 +1,6 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(ls *)",
-      "Bash(node *)",
-      "Bash(npm *)",
-      "Bash(ng *)",
-      "Bash(npx *)",
-      "Bash(git *)",
-      "Bash(* install)",
-      "Bash(* --version)",
-      "Bash(* --help *)",
-      "Bash(python3 *)",
-      "Bash(pnpm *)",
-      "Bash(*)"
+    "allow": [      
     ],
     "deny": [
       "Bash(git push *)"
