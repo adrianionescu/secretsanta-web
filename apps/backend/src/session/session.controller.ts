@@ -23,8 +23,8 @@ export class SessionController {
   }
 
   @Post()
-  saveSession(@Body() body: { name: string; participants: string[]; pairs: string }) {
-    return this.sessionService.saveSession(body.name, body.participants, body.pairs);
+  saveSession(@Body() body: { name: string; participants: string[]; pairs: string; createdAt?: string }) {
+    return this.sessionService.saveSession(body.name, body.participants, body.pairs, body.createdAt);
   }
 
   @Delete()

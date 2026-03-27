@@ -17,8 +17,8 @@ export class SessionService {
     );
   }
 
-  saveSession(name: string, participants: string[], pairs: string): Observable<SessionModel> {
-    return this.http.post<SessionModel>(this.base, { name, participants, pairs });
+  saveSession(name: string, participants: string[], pairs: string, createdAt?: string): Observable<SessionModel> {
+    return this.http.post<SessionModel>(this.base, { name, participants, pairs, createdAt });
   }
 
   listSessions(): Observable<SessionModel[]> {

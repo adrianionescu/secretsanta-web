@@ -28,7 +28,9 @@ export class SessionListComponent implements OnInit {
     this.loading = true;
     this.sessionService.listSessions().subscribe({
       next: (sessions) => {
-        this.sessions = sessions;
+        this.sessions = sessions.sort((a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
         this.loading = false;
       },
       error: (err) => {
@@ -95,7 +97,7 @@ export class SessionListComponent implements OnInit {
     const pairs = this.parsePairs(session.pairs);
     const lines = [
       `Session: ${session.name}`,
-      `Date: ${this.formatDate(session.createdAt)}`,
+      `Date: ${session.createdAt}`,
       `Participants: ${session.participants.join(', ')}`,
       '',
       'Pairs:',
@@ -115,7 +117,7 @@ export class SessionListComponent implements OnInit {
       const pairs = this.parsePairs(session.pairs);
       return [
         `Session: ${session.name}`,
-        `Date: ${this.formatDate(session.createdAt)}`,
+        `Date: ${session.createdAt}`,
         `Participants: ${session.participants.join(', ')}`,
         '',
         'Pairs:',
@@ -154,7 +156,7 @@ export class SessionListComponent implements OnInit {
           return;
         }
         const s = sessions[index];
-        this.sessionService.saveSession(s.name, s.participants, s.pairs).subscribe({
+        this.sessionService.saveSession(s.name, s.participants, s.pairs, s.createdAt).subscribe({
           next: () => { imported++; importNext(index + 1); },
           error: (err) => {
             errors.push(`"${s.name}": ${err.error?.message || err.message || 'Failed'}`);
@@ -167,22 +169,24 @@ export class SessionListComponent implements OnInit {
     reader.readAsText(file);
   }
 
-  private parseSessionsFile(content: string): Array<{ name: string; participants: string[]; pairs: string }> {
+  private parseSessionsFile(content: string): Array<{ name: string; participants: string[]; pairs: string; createdAt?: string }> {
     return content.split(/\n---\n/)
       .map(block => this.parseSessionBlock(block.trim()))
-      .filter((s): s is { name: string; participants: string[]; pairs: string } => s !== null);
+      .filter((s): s is { name: string; participants: string[]; pairs: string; createdAt?: string } => s !== null);
   }
 
-  private parseSessionBlock(block: string): { name: string; participants: string[]; pairs: string } | null {
+  private parseSessionBlock(block: string): { name: string; participants: string[]; pairs: string; createdAt?: string } | null {
     const lines = block.split('\n').map(l => l.trim());
 
     const nameLine = lines.find(l => l.startsWith('Session: '));
+    const dateLine = lines.find(l => l.startsWith('Date: '));
     const participantsLine = lines.find(l => l.startsWith('Participants: '));
     const pairsStart = lines.indexOf('Pairs:');
 
     if (!nameLine || !participantsLine || pairsStart === -1) return null;
 
     const name = nameLine.slice('Session: '.length).trim();
+    const createdAt = dateLine ? dateLine.slice('Date: '.length).trim() : undefined;
     const participants = participantsLine.slice('Participants: '.length)
       .split(',').map(p => p.trim()).filter(p => p.length > 0);
 
@@ -197,6 +201,6 @@ export class SessionListComponent implements OnInit {
 
     if (!name || participants.length === 0 || pairs.length === 0) return null;
 
-    return { name, participants, pairs: JSON.stringify(pairs) };
+    return { name, participants, pairs: JSON.stringify(pairs), createdAt };
   }
 }

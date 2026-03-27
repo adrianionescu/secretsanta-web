@@ -47,6 +47,7 @@ export class SessionService {
     name: string,
     participants: string[],
     pairs: string,
+    createdAt?: string,
   ): Promise<SessionModel> {
     const exists = await this.sessionRepository.existsByName(name);
     if (exists) {
@@ -57,7 +58,7 @@ export class SessionService {
 
     const session: SessionModel = {
       name,
-      createdAt: new Date().toISOString(),
+      createdAt: createdAt ?? new Date().toISOString(),
       pairs,
       participants,
     };
