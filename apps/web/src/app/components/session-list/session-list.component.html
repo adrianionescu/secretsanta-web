@@ -1,5 +1,14 @@
 <div class="session-list">
-  <h2>Past Sessions</h2>
+  <div class="list-header">
+    <h2>Past Sessions</h2>
+    <div class="list-actions">
+      <button class="btn-export-all" (click)="exportAllSessions()" [disabled]="sessions.length === 0" title="Export all sessions">Export All</button>
+      <label class="btn-import" title="Import sessions from file">
+        Import
+        <input type="file" accept=".txt" (change)="onFileSelected($event)" hidden>
+      </label>
+    </div>
+  </div>
   @if (loading) {
     <div class="loading">Loading sessions...</div>
   }
@@ -16,6 +25,7 @@
       <div class="session-header">
         <span class="session-name">{{ session.name }}</span>
         <span class="session-date">{{ formatDate(session.createdAt) }}</span>
+        <button class="btn-export" (click)="exportSession(session)" title="Export session">Export</button>
         <button class="btn-delete" (click)="deleteSession(session.name)" title="Delete session">✕</button>
       </div>
       <div class="session-pairs">
