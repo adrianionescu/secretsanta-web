@@ -26,8 +26,10 @@
       <div class="session-header">
         <span class="session-name">{{ session.name }}</span>
         <span class="session-date">{{ formatDate(session.createdAt) }}</span>
-        <button class="btn-export" (click)="exportSession(session)" title="Export session">Export</button>
-        <button class="btn-delete" (click)="deleteSession(session.name)" title="Delete session">✕</button>
+        <div class="session-actions">
+          <button class="btn-export" (click)="exportSession(session)" title="Export session">Export</button>
+          <button class="btn-delete" (click)="deleteSession(session.name)" title="Delete session">Delete</button>
+        </div>
       </div>
       <div class="session-pairs">
         @for (pair of parsePairs(session.pairs); track $index) {
