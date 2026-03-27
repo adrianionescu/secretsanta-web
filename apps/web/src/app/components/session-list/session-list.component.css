@@ -79,11 +79,11 @@
   font-size: 15px;
   border-bottom: 1px solid #f5f5f5;
 }
-.pair-item { display: flex; align-items: center; gap: 8px; }
+.pair-item { display: grid; grid-template-columns: 1fr 2fr auto; align-items: center; gap: 12px; }
 .pair-item:last-child { border-bottom: none; }
-.pair-message { margin-left: auto; font-size: 12px; color: #bbb; white-space: nowrap; }
+.pair-message { font-size: 12px; color: #bbb; }
 .btn-copy {
-  margin-left: auto;
+  flex-shrink: 0;
   background: none;
   border: 1px solid #d9d9d9;
   border-radius: 4px;

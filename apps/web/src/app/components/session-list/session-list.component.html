@@ -32,7 +32,7 @@
       <div class="session-pairs">
         @for (pair of parsePairs(session.pairs); track $index) {
           <div class="pair-item">
-            <strong>{{ pair.giver }}</strong> → {{ pair.receiver }}
+            <span class="pair-names"><strong>{{ pair.giver }}</strong> → {{ pair.receiver }}</span>
             <span class="pair-message">{{ formatMessage(pair) }}</span>
             <button
               class="btn-copy"
