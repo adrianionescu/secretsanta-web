@@ -90,6 +90,13 @@ gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
 gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
   --member="serviceAccount:$SA" \
   --role="roles/iam.serviceAccountTokenCreator"
+
+# Allow the SA to act as the Compute Engine default SA (required by Cloud Run deploy)
+PROJECT_NUMBER=$(gcloud projects describe YOUR_PROJECT_ID --format="value(projectNumber)")
+gcloud iam service-accounts add-iam-policy-binding \
+  ${PROJECT_NUMBER}-compute@developer.gserviceaccount.com \
+  --member="serviceAccount:$SA" \
+  --role="roles/iam.serviceAccountUser"
 ```
 
 ### 6. Configure Workload Identity Federation

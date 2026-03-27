@@ -21,7 +21,7 @@ RUN pnpm install --frozen-lockfile
 RUN sed -i "s|__BACKEND_URL__|${BACKEND_URL}|g" apps/web/src/environments/environment.prod.ts
 
 # Build the Angular app in production mode
-RUN pnpm nx build web --prod
+RUN pnpm nx build web --configuration=production
 
 # ---- Stage 2: Serve with nginx ----
 FROM nginx:alpine AS runtime
