@@ -1,62 +1,65 @@
 # Local Development
 
-## Prerequisites
+## Option A — Dev container (recommended)
 
-| Tool | Version | Install |
-|---|---|---|
-| Node.js | 24.x | [nodejs.org](https://nodejs.org) |
-| pnpm | 10.32.x | `npm install -g pnpm` |
-| Docker + Docker Compose | latest | [docker.com](https://docker.com) |
-| MongoDB | via Docker | see below |
+**Prerequisites:** Docker, VS Code with the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
 
-> If you're using the **dev container** (recommended), all prerequisites are already installed.
+1. Open the repository folder in VS Code.
+2. When prompted, click **Reopen in Container** (or run `Dev Containers: Reopen in Container` from the command palette).
+3. VS Code builds the container image and starts MongoDB automatically — no extra setup needed.
+4. Inside the container terminal, install dependencies:
+   ```bash
+   pnpm install
+   ```
+5. Start the services in separate terminals:
+   ```bash
+   pnpm run dev:backend   # http://localhost:3000
+   pnpm run dev:web       # http://localhost:4200
+   ```
+
+MongoDB is reachable at `mongodb://db:27017` from inside the container.
 
 ---
 
-## First-Time Setup
+## Option B — Local machine (without dev container)
 
-### 1. Install dependencies
+**Prerequisites:** Node.js 24.x, pnpm 10.x, Docker (for MongoDB).
+
+### 1. Start MongoDB
+
+```bash
+docker compose -f .devcontainer/docker-compose.yml -f .devcontainer/docker-compose.override.yml up db -d
+```
+
+MongoDB will be available at `mongodb://localhost:27017`.
+
+### 2. Create `.env.development`
+
+Create this file at the workspace root:
+
+```env
+PORT=3000
+DB_PROVIDER=mongo
+# when running in devcontainers
+# MONGO_URI=mongodb://db:27017/secretsanta
+# when running directly on local machine
+MONGO_URI=mongodb://localhost:27017/secretsanta
+```
+
+### 3. Install dependencies
 
 ```bash
 pnpm install
 ```
 
-### 2. Start MongoDB
+### 4. Start the services
 
-The dev container starts MongoDB automatically via Docker Compose. If you're running outside the dev container, see README.md for details.
-
----
-
-## Running the Application
-
-Open two terminals and run the backend and frontend in parallel.
-
-### Backend (Backend — port 3000)
+Open two terminals and run the backend and frontend in parallel:
 
 ```bash
-pnpm run dev:backend
+pnpm run dev:backend   # http://localhost:3000
+pnpm run dev:web       # http://localhost:4200
 ```
-
-The Backend starts on `http://localhost:3000`. Test it is running:
-
-```bash
-curl http://localhost:3000/health
-# → {"status":"ok"}
-```
-
-### Frontend (port 4200)
-
-```bash
-pnpm run dev:web
-```
-
-Open `http://localhost:4200` in your browser. The Angular dev server proxies nothing — it calls the Backend at `http://localhost:3000` directly.
-
----
-
-## Environment Variables
-
-The Backend reads its configuration from a `.env.development` file at the workspace root. See README.md for details.
 
 ---
 

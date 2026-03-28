@@ -240,18 +240,6 @@ curl $BACKEND_URL/health
 
 ---
 
-## Environment Variables Reference
-
-| Variable | Service | Default | Description |
-|---|---|---|---|
-| `DB_PROVIDER` | Backend | `mongo` | `mongo` (local) or `firestore` (GCP) |
-| `MONGO_URI` | Backend | `mongodb://localhost:27017/secretsanta` | MongoDB connection string (local only) |
-| `GCP_PROJECT_ID` | Backend | — | GCP project ID (required when `DB_PROVIDER=firestore`) |
-| `PORT` | Backend | `3000` | HTTP port (Cloud Run sets this automatically) |
-| `FRONTEND_URL` | Backend | — | Frontend Cloud Run URL, added to CORS allowed origins |
-
----
-
 ## Updating After Code Changes
 
 Simply push to `main` — the CI/CD pipeline handles the rest. Each deployment creates a new Docker image tagged with the Git commit SHA, ensuring full traceability between code and what is running in production.
