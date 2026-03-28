@@ -133,6 +133,24 @@ gcloud iam workload-identity-pools providers describe github-provider \
 # → projects/123456789/locations/global/workloadIdentityPools/github-pool/providers/github-provider
 ```
 
+### 7. Allow public access to Cloud Run services
+
+The `--allow-unauthenticated` flag in the deploy command does not always set the IAM binding (org policies can block it). Grant public invoker access explicitly:
+
+```bash
+gcloud run services add-iam-policy-binding secret-santa-backend \
+  --region=us-central1 \
+  --member="allUsers" \
+  --role="roles/run.invoker"
+
+gcloud run services add-iam-policy-binding secret-santa-web \
+  --region=us-central1 \
+  --member="allUsers" \
+  --role="roles/run.invoker"
+```
+
+> If this fails, your GCP org has a policy blocking public Cloud Run services (`constraints/iam.allowedPolicyMemberDomains`). Check GCP Console → IAM & Admin → Organization Policies.
+
 ---
 
 ## GitHub Repository Secrets
@@ -219,18 +237,6 @@ BACKEND_URL=$(gcloud run services describe secret-santa-backend \
 curl $BACKEND_URL/health
 # → {"status":"ok"}
 ```
-
----
-
-## Environment Variables Reference
-
-| Variable | Service | Default | Description |
-|---|---|---|---|
-| `DB_PROVIDER` | Backend | `mongo` | `mongo` (local) or `firestore` (GCP) |
-| `MONGO_URI` | Backend | `mongodb://localhost:27017/secretsanta` | MongoDB connection string (local only) |
-| `GCP_PROJECT_ID` | Backend | — | GCP project ID (required when `DB_PROVIDER=firestore`) |
-| `PORT` | Backend | `3000` | HTTP port (Cloud Run sets this automatically) |
-| `FRONTEND_URL` | Backend | — | Frontend Cloud Run URL, added to CORS allowed origins |
 
 ---
 
