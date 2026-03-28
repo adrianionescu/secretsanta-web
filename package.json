@@ -62,6 +62,8 @@
   },
   "dependencies": {
     "@google-cloud/firestore": "^8.3.0",
+    "@nestjs/jwt": "^11.0.0",
+    "google-auth-library": "^9.0.0",
     "@nestjs/common": "^11.1.17",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.1.17",

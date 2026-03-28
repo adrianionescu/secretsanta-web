@@ -146,8 +146,11 @@ Backend configuration is read exclusively from environment variables via `proces
 |---|---|---|---|---|
 | `DB_PROVIDER` | Yes | `mongo` | `.env.development` / Cloud Run env (see `deploy_gcp.yml`) | Selects the DB adapter: `mongo` (local) or `firestore` (GCP prod) |
 | `MONGO_URI` | When `DB_PROVIDER=mongo` | `mongodb://localhost:27017/secretsanta` | `.env.development` | MongoDB connection string; only used when `DB_PROVIDER=mongo` |
-| `GCP_PROJECT_ID` | When `DB_PROVIDER=firestore` | — | Cloud Run env (from `GCP_PROJECT_ID` GitHub secret,  see `deploy_gcp.yml`) | GCP project ID passed to the Firestore client |
+| `GCP_PROJECT_ID` | When `DB_PROVIDER=firestore` | — | Cloud Run env (from `GCP_PROJECT_ID` GitHub secret, see `deploy_gcp.yml`) | GCP project ID passed to the Firestore client |
 | `PORT` | No | `3000` | Cloud Run env (set automatically by Cloud Run) | HTTP port the backend listens on |
+| `GOOGLE_CLIENT_ID` | Yes | — | `.env.development` / Cloud Run env (from `GOOGLE_CLIENT_ID` GitHub secret) | Google OAuth2 client ID used to verify ID tokens |
+| `JWT_SECRET` | Yes | `dev-secret-change-in-production` | `.env.development` / Cloud Run env (from `JWT_SECRET` GitHub secret) | Signs and verifies session JWTs; must be set in production |
+| `ALLOWED_EMAILS_PATH` | No | `allowed-emails.txt` (relative to cwd) | `.env.development` | Path to the allowlist file; defaults to `allowed-emails.txt` next to the running process |
 
 **How `DB_PROVIDER` controls the adapter** (`repository.module.ts`):
 ```
@@ -161,16 +164,20 @@ DB_PROVIDER=firestore  → FirestoreSessionRepository (used on GCP)
 
 The frontend has no runtime environment variables. Configuration is baked in at **build time** via Angular environment files:
 
-| File | Used when | `backendUrl` value |
+| File | Used when | Notes |
 |---|---|---|
-| `src/environments/environment.ts` | Local dev (`ng serve`) | `http://localhost:3000` (hardcoded) |
-| `src/environments/environment.prod.ts` | Production build | `__BACKEND_URL__` placeholder, replaced by `sed` in the Dockerfile before `nx build` |
+| `src/environments/environment.ts` | Local dev (`ng serve`) | `backendUrl` hardcoded to `http://localhost:3000`; `googleClientId` uses the same `__GOOGLE_CLIENT_ID__` placeholder — set via `.env.development` or replace manually for local testing |
+| `src/environments/environment.prod.ts` | Production build | Both `__BACKEND_URL__` and `__GOOGLE_CLIENT_ID__` placeholders replaced by `sed` in the Dockerfile before `nx build` |
 
-**How `BACKEND_URL` flows into a production image:**
+**How build-time values flow into a production image:**
 
-1. The GitHub Actions workflow captures the Cloud Run URL output from the backend deploy step.
-2. The web `Dockerfile` receives it as a build arg (`ARG BACKEND_URL`).
-3. A `sed` command replaces the `__BACKEND_URL__` placeholder in `environment.prod.ts` before the Angular build runs.
+1. The GitHub Actions workflow passes `BACKEND_URL` (from the backend deploy output) and `GOOGLE_CLIENT_ID` (from the GitHub secret) as Docker build args.
+2. The web `Dockerfile` runs two `sed` commands to replace `__BACKEND_URL__` and `__GOOGLE_CLIENT_ID__` in `environment.prod.ts`.
+3. `nx build` then compiles those values into the Angular bundle.
+
+**Allowed emails file** (`apps/backend/allowed-emails.txt`):
+
+The backend reads a plain-text file of permitted Google email addresses at startup. One email per line; lines starting with `#` are ignored. The file is baked into the Docker image at `/app/allowed-emails.txt`. To change the list, update the file and redeploy. The path can be overridden via `ALLOWED_EMAILS_PATH`.
 
 ---
 

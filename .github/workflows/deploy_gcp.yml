@@ -54,6 +54,8 @@ jobs:
           env_vars: |
             DB_PROVIDER=firestore
             GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
           flags: --allow-unauthenticated --port=3000 --memory=512Mi --cpu=1
 
   # ─── Deploy Web ──────────────────────────────────────────────────────────────
@@ -88,6 +90,7 @@ jobs:
         run: |
           docker build -f apps/web/Dockerfile \
             --build-arg BACKEND_URL=${BACKEND_URL} \
+            --build-arg GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
             -t $IMAGE .
           docker push $IMAGE
 
