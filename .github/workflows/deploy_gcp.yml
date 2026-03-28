@@ -51,8 +51,8 @@ jobs:
           service: secret-santa-backend
           region: ${{ env.GCP_REGION }}
           image: ${{ env.GAR_HOST }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.GAR_REPO }}/backend:${{ github.sha }}
+          env_vars_file: .env.production.gcp
           env_vars: |
-            DB_PROVIDER=firestore
             GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             JWT_SECRET=${{ secrets.JWT_SECRET }}

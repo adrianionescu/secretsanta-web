@@ -15,7 +15,8 @@ out-tsc/
 
 # Environment files (never commit secrets)
 .env
-.env.*
+.env.development
+.env.test
 !.env.*.example
 
 # Angular
