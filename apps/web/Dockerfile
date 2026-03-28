@@ -3,6 +3,7 @@ FROM node:24-alpine AS builder
 WORKDIR /app
 
 ARG BACKEND_URL=http://localhost:3000
+ARG GOOGLE_CLIENT_ID=
 
 RUN corepack enable pnpm
 
@@ -17,8 +18,9 @@ COPY apps/web/ apps/web/
 # Install all dependencies
 RUN pnpm install --frozen-lockfile
 
-# Replace the BACKEND URL placeholder in the production environment
+# Replace placeholders in the production environment
 RUN sed -i "s|__BACKEND_URL__|${BACKEND_URL}|g" apps/web/src/environments/environment.prod.ts
+RUN sed -i "s|__GOOGLE_CLIENT_ID__|${GOOGLE_CLIENT_ID}|g" apps/web/src/environments/environment.prod.ts
 
 # Build the Angular app in production mode
 RUN pnpm nx build web --configuration=production

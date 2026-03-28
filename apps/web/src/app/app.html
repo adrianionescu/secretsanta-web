@@ -1,13 +1,18 @@
-<div class="app-container">
-  <header class="app-header">
-    <h1>🎅 Secret Santa</h1>
-  </header>
-  <main>
-    <section class="top-section">
-      <app-session-form (sessionSaved)="onSessionSaved()"></app-session-form>
-    </section>
-    <section class="bottom-section">
-      <app-session-list></app-session-list>
-    </section>
-  </main>
-</div>
+@if (authService.isAuthenticated$ | async) {
+  <div class="app-container">
+    <header class="app-header">
+      <h1>🎅 Secret Santa</h1>
+      <button class="sign-out-btn" (click)="authService.signOut()">Sign out</button>
+    </header>
+    <main>
+      <section class="top-section">
+        <app-session-form (sessionSaved)="onSessionSaved()"></app-session-form>
+      </section>
+      <section class="bottom-section">
+        <app-session-list></app-session-list>
+      </section>
+    </main>
+  </div>
+} @else {
+  <app-login></app-login>
+}

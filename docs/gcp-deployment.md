@@ -161,6 +161,8 @@ Add the following secrets to your GitHub repository under **Settings → Secrets
 |---|---|---|
 | `GCP_PROJECT_ID` | `your-gcp-project-id` | GCP Console → project selector |
 | `GCP_SA_EMAIL` | `github-actions-sa@YOUR_PROJECT_ID.iam.gserviceaccount.com` | Step 5 above |
+| `GOOGLE_CLIENT_ID` | `123456789-abc.apps.googleusercontent.com` | Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client ID |
+| `JWT_SECRET` | random 32+ char string | `openssl rand -base64 32` |
 | `WIF_PROVIDER` | `projects/123.../providers/github-provider` | Output of last command in Step 6 |
 
 ---
