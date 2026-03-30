@@ -44,6 +44,11 @@ pnpm nx affected -t test
 - **Environment files**: backend reads `.env.development` at the workspace root; copy `.env.production.example` as reference.
 - **ADRs**: record significant architecture decisions in `docs/adr/` using `YYYY-MM-DD-<slug>.md` naming.
 
+## Instructions
+
+- **Code coverage** any changes to backend is covered by tests.
+- **ADRs** every significant change is documented in an ADR. Ask if unclear whether the change is big enough to warrant an ADR.
+
 ## Local environment variables (`.env.development`)
 
 See README.md
