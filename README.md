@@ -6,8 +6,6 @@ A web application for organising Secret Santa gift exchanges.
 
 See the [local development guide](docs/local-development.md) for full setup instructions (dev container and local machine).
 
----
-
 ## Further reading
 
 - [Architecture](docs/architecture.md)
