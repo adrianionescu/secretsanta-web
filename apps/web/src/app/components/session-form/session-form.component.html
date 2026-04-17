@@ -45,7 +45,7 @@
       <ul>
         @for (pair of generatedPairs; track $index) {
           <li>
-            <strong>{{ pair.giver }}</strong> → {{ pair.receiver }}
+            <strong>{{ pair.giver }}</strong> ({{ pair.giverId }}) → {{ pair.receiver }} ({{ pair.receiverId }})
           </li>
         }
       </ul>

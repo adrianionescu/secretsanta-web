@@ -10,7 +10,7 @@ env:
   GAR_REPO: secret-santa
 
 jobs:
-  # ─── Deploy backend ──────────────────────────────────────────────────────────────
+  # ─── Deploy backend ───────────────────────────────────────────────────────────
   deploy-backend:
     name: Build & Deploy Backend
     runs-on: ubuntu-latest
@@ -25,7 +25,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Authenticate to GCP
-        id: auth
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
@@ -37,12 +36,14 @@ jobs:
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker ${{ env.GAR_HOST }}
 
+      - name: Set image tag
+        id: image
+        run: echo "tag=${{ env.GAR_HOST }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.GAR_REPO }}/backend:${{ github.sha }}" >> $GITHUB_OUTPUT
+
       - name: Build and push Backend image
-        env:
-          IMAGE: ${{ env.GAR_HOST }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.GAR_REPO }}/backend:${{ github.sha }}
         run: |
-          docker build -f apps/backend/Dockerfile -t $IMAGE .
-          docker push $IMAGE
+          docker build -f apps/backend/Dockerfile -t ${{ steps.image.outputs.tag }} .
+          docker push ${{ steps.image.outputs.tag }}
 
       - name: Deploy Backend to Cloud Run
         id: deploy
@@ -50,7 +51,7 @@ jobs:
         with:
           service: secret-santa-backend
           region: ${{ env.GCP_REGION }}
-          image: ${{ env.GAR_HOST }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.GAR_REPO }}/backend:${{ github.sha }}
+          image: ${{ steps.image.outputs.tag }}
           env_vars_file: .env.production.gcp
           env_vars: |
             GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}
@@ -58,7 +59,7 @@ jobs:
             JWT_SECRET=${{ secrets.JWT_SECRET }}
           flags: --allow-unauthenticated --port=3000 --memory=512Mi --cpu=1
 
-  # ─── Deploy Web ──────────────────────────────────────────────────────────────
+  # ─── Deploy Web ───────────────────────────────────────────────────────────────
   deploy-web:
     name: Build & Deploy Web
     runs-on: ubuntu-latest
@@ -83,23 +84,22 @@ jobs:
       - name: Configure Docker for Artifact Registry
         run: gcloud auth configure-docker ${{ env.GAR_HOST }}
 
+      - name: Set image name
+        id: image
+        run: echo "tag=${{ env.GAR_HOST }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.GAR_REPO }}/web:${{ github.sha }}" >> $GITHUB_OUTPUT
+
       - name: Build and push Web image
-        env:
-          IMAGE: ${{ env.GAR_HOST }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.GAR_REPO }}/web:${{ github.sha }}
-          BACKEND_URL: ${{ needs.deploy-backend.outputs.url }}
         run: |
           docker build -f apps/web/Dockerfile \
-            --build-arg BACKEND_URL=${BACKEND_URL} \
+            --build-arg BACKEND_URL=${{ needs.deploy-backend.outputs.url }} \
             --build-arg GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
-            -t $IMAGE .
-          docker push $IMAGE
+            -t ${{ steps.image.outputs.tag }} .
+          docker push ${{ steps.image.outputs.tag }}
 
       - name: Deploy Web to Cloud Run
-        id: deploy-web
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: secret-santa-web
           region: ${{ env.GCP_REGION }}
-          image: ${{ env.GAR_HOST }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.GAR_REPO }}/web:${{ github.sha }}
+          image: ${{ steps.image.outputs.tag }}
           flags: --allow-unauthenticated --port=8080 --memory=256Mi --cpu=1
-

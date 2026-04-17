@@ -1,0 +1,8 @@
+services:
+  app:
+    volumes:
+      - D:\Workspace\.claude:/home/node/.claude
+      
+  db:    
+    volumes:
+      - D:\Workspace\_data\mongodb-data:/data/db

@@ -1,4 +1,7 @@
 {
+  "info": {
+    "explanation": "this is just for fun, to let Claude run queries from the chat. Not involved in the app in any way."
+  },
   "mcpServers": {
     "mongodb": {
       "command": "npx",
@@ -7,5 +10,5 @@
         "MDB_MCP_CONNECTION_STRING": "mongodb://localhost:27017/secretsanta"
       }
     }
-  }
+  } 
 }

@@ -10,7 +10,10 @@
       "Bash(git *)",
       "Bash(pnpm install)",
       "Bash(* --version)",
-      "Bash(* --help *)"
+      "Bash(* --help *)",
+      "mcp__mongodb__list-databases",
+      "mcp__mongodb__list-collections",
+      "mcp__mongodb__find"
     ],
     "deny": [
       "Bash(git push *)"
